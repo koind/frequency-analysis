@@ -15,16 +15,10 @@ func Analyze(text string) map[string]int {
 
 	words := leaveLetters(text)
 	for _, word := range words {
-		if _, hasWord := repeatabilityWords[word]; hasWord {
-			repeatabilityWords[word]++
-		} else {
-			repeatabilityWords[word] = 1
-		}
+		repeatabilityWords[word]++
 	}
 
-	repeatabilityWords = chooseRecurringMoreThan(repeatabilityWords, 10)
-
-	return repeatabilityWords
+	return choosePopularWords(repeatabilityWords, 10)
 }
 
 func leaveLetters(text string) []string {
@@ -41,21 +35,26 @@ func leaveLetters(text string) []string {
 	return clearNumbers(data)
 }
 
-func chooseRecurringMoreThan(words map[string]int, repeatability int) map[string]int {
-	for word, count := range words {
-		if count < repeatability {
-			delete(words, word)
+func choosePopularWords(words map[string]int, quantity int) map[string]int {
+	popularWord := rankByWordCount(words)
+	list := make(map[string]int, quantity)
+
+	i := 0
+	for _, pl := range popularWord {
+		if i <= quantity {
+			list[pl.Key] = pl.Value
 		}
+		i++
 	}
 
-	return words
+	return list
 }
 
 func clearNumbers(words []string) []string {
 	newWords := make([]string, 0, len(words))
 
 	for _, word := range words {
-		if isInt(word) {
+		if _, err := strconv.Atoi(word); err == nil {
 			continue
 		}
 
@@ -63,12 +62,4 @@ func clearNumbers(words []string) []string {
 	}
 
 	return newWords
-}
-
-func isInt(strVal string) bool {
-	if _, err := strconv.Atoi(strVal); err == nil {
-		return true
-	}
-
-	return false
 }
