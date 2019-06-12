@@ -41,9 +41,12 @@ func choosePopularWords(words map[string]int, quantity int) map[string]int {
 
 	i := 0
 	for _, pl := range popularWord {
-		if i <= quantity {
-			list[pl.Key] = pl.Value
+		if i > quantity {
+			break
 		}
+
+		list[pl.Key] = pl.Value
+
 		i++
 	}
 
